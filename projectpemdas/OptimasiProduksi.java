@@ -120,7 +120,7 @@ public class OptimasiProduksi {
                 // Rekursi ke produk berikutnya
                 cariKombinasiProduk(indeksProduk + 1);
 
-                // Backtrack untuk mencoba kombinasi lainnya
+                // mengembalikan nilai nilai untuk mencoba kombinasi lainnya
                 totalWaktuKerja -= tambahanWaktuKerja;
                 totalBahanBaku -= tambahanBahanBaku;
                 totalKeuntungan -= tambahanKeuntungan;
