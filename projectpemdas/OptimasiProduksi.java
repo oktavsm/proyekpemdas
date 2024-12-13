@@ -134,6 +134,7 @@ public class OptimasiProduksi {
     }
 
     static String formatTengah(String teks) {
+        //memformat teks menjadi center, batas teks pada tabel adalah 13 karakter
         String hasilFormat = "";
         int padding = 13 - teks.length();
         int paddingKanan = (padding % 2 != 0) ? padding / 2 + 1 : padding / 2;
