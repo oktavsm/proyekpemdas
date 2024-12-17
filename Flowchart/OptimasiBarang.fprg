@@ -1,1 +1,113 @@
-
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="OptimasiBarang"/>
+        <attribute name="authors" value="User"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2024-12-17 02:36:51 PM"/>
+        <attribute name="created" value="VXNlcjtTQU1TVU5HLTgwRjsyMDI0LTEyLTE3OzAxOjQ3OjM2IFBNOzI0NjA="/>
+        <attribute name="edited" value="VXNlcjtTQU1TVU5HLTgwRjsyMDI0LTEyLTE3OzAyOjM2OjUxIFBNOzE7MjU2NA=="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <call expression="getData()"/>
+            <call expression="getCombination()"/>
+            <call expression="printOptimalAdvantage()"/>
+        </body>
+    </function>
+    <function name="findOptimalAdvantage" type="None" variable="">
+        <parameters>
+            <parameter name="length" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <for variable="i" start="0" end="length-1" direction="inc" step="1">
+                <if expression="combinations[i][2] &gt; optimalAdvantage[2]">
+                    <then>
+                        <assign variable="optimalAdvantage[0]" expression="combinations[i][0]"/>
+                        <assign variable="optimalAdvantage[1]" expression="combinations[i][1]"/>
+                        <assign variable="optimalAdvantage[2]" expression="combinations[i][2]"/>
+                    </then>
+                    <else/>
+                </if>
+            </for>
+        </body>
+    </function>
+    <function name="getCombination" type="None" variable="">
+        <parameters/>
+        <body>
+            <assign variable="length" expression="0"/>
+            <assign variable="maxCombinationA" expression="Math.min(maxTime / aTime, maxMaterial / aMaterial)"/>
+            <assign variable="maxCombinationB" expression="Math.min(maxTime / bTime, maxMaterial / bMaterial)"/>
+            <for variable="a" start="0" end="maxCombinationA" direction="inc" step="1">
+                <for variable="b" start="0" end="maxCombinationB" direction="inc" step="1">
+                    <assign variable="totalTime" expression="a * aTime + b * bTime"/>
+                    <assign variable="totalMaterial" expression="a * aMaterial + b * bMaterial"/>
+                    <assign variable="totalAdvantage" expression="a * aAdvantage + b * bAdvantage"/>
+                    <if expression="totalTime &lt;= maxTime &amp;&amp; totalMaterial &lt;= maxMaterial">
+                        <then>
+                            <assign variable="combinations[length][0]" expression="a"/>
+                            <assign variable="combinations[length][1]" expression="b"/>
+                            <assign variable="combinations[length][2]" expression="totalAdvantage"/>
+                            <assign variable="length" expression="length+1"/>
+                        </then>
+                        <else/>
+                    </if>
+                </for>
+            </for>
+            <call expression="findOptimalAdvantage(length)"/>
+            <call expression="printCombinations(length)"/>
+        </body>
+    </function>
+    <function name="getData" type="None" variable="">
+        <parameters/>
+        <body>
+            <for variable="i" start="0" end="1" direction="inc" step="1">
+                <input variable="maxTime"/>
+                <input variable="maxMaterial"/>
+                <input variable="aTime"/>
+                <input variable="aMaterial"/>
+                <input variable="aAdvantage"/>
+                <input variable="bTime"/>
+                <input variable="bMaterial"/>
+                <input variable="bAdvantage"/>
+                <if expression="maxTime &lt; 0 || maxMaterial &lt; 0 || aTime &lt; 0 || aMaterial &lt; 0 || aAdvantage &lt; 0 || bTime &lt; 0 || bMaterial &lt; 0 || bAdvantage &lt; 0">
+                    <then>
+                        <assign variable="i" expression="-1"/>
+                        <output expression="&quot;\n=== Masukan tidak valid, silakan input kembali ===\n&quot;" newline="True"/>
+                    </then>
+                    <else/>
+                </if>
+            </for>
+        </body>
+    </function>
+    <function name="printCombinations" type="None" variable="">
+        <parameters>
+            <parameter name="length" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <for variable="i" start="0" end="length-1" direction="inc" step="1">
+                <assign variable="a" expression="combinations[i][0]"/>
+                <assign variable="b" expression="combinations[i][1]"/>
+                <assign variable="advantage" expression="combinations[i][2]"/>
+                <output expression="&quot;Kombinasi: Produk A = %d, Produk B = %d -&gt; Keuntungan = Rp%d\n&quot;, a, b, advantage" newline="False"/>
+                <if expression="advantage == optimalAdvantage[2]">
+                    <then>
+                        <output expression="&quot;(Optimal)&quot;" newline="True"/>
+                    </then>
+                    <else/>
+                </if>
+            </for>
+        </body>
+    </function>
+    <function name="printOptimalAdvantage" type="None" variable="">
+        <parameters/>
+        <body>
+            <output expression="&quot;\n=== Hasil Optimasi ===&quot;" newline="True"/>
+            <output expression="&quot;Produk Optimal:&quot;" newline="True"/>
+            <output expression="&quot;Produk A = &quot; + optimalAdvantage[0] + &quot; unit&quot;" newline="True"/>
+            <output expression="&quot;Produk B = &quot; + optimalAdvantage[1] + &quot; unit&quot;" newline="True"/>
+            <output expression="&quot;Keuntungan maksimal: Rp&quot; + optimalAdvantage[2]" newline="True"/>
+        </body>
+    </function>
+</flowgorithm>

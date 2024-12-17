@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="OptimasiProduksi"/>
+        <attribute name="authors" value="User"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2024-12-17 06:26:40 PM"/>
+        <attribute name="created" value="VXNlcjtTQU1TVU5HLTgwRjsyMDI0LTEyLTE3OzAyOjM3OjQ0IFBNOzI0NTk="/>
+        <attribute name="edited" value="VXNlcjtTQU1TVU5HLTgwRjsyMDI0LTEyLTE3OzA2OjA4OjA1IFBNOzI7VXNlcjtTQU1TVU5HLTgwRjsyMDI0LTEyLTE3OzAxOjQ3OjM2IFBNO09wdGltYXNpQmFyYW5nLmZwcmc7NzA0Nw=="/>
+        <attribute name="edited" value="VXNlcjtTQU1TVU5HLTgwRjsyMDI0LTEyLTE3OzA2OjI2OjQwIFBNOzI7MjU2Ng=="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <input variable="batasWaktuKerja"/>
+            <if expression="batasWaktuKerja &lt; 0">
+                <then>
+                    <output expression="&quot;Input tidak bisa negatif!&quot;" newline="True"/>
+                </then>
+                <else/>
+            </if>
+            <input variable="batasBahanBaku"/>
+            <if expression="batasBahanBaku &lt; 0">
+                <then>
+                    <output expression="&quot;Input tidak bisa negatif!&quot;" newline="True"/>
+                    <comment text="return"/>
+                </then>
+                <else/>
+            </if>
+            <output expression="&quot;Masukkan jumlah jenis produk (minimal 2): &quot;" newline="True"/>
+            <input variable="jumlahJenisProduk"/>
+            <if expression="jumlahJenisProduk &lt; 0">
+                <then>
+                    <output expression="&quot;Input tidak bisa negatif!&quot;" newline="True"/>
+                    <comment text="return"/>
+                </then>
+                <else/>
+            </if>
+            <declare name="kebutuhanProduk [kebutuhanProduk]" type="Integer" array="True" size="3"/>
+            <assign variable="kodeProduk" expression="65"/>
+            <for variable="indeksProduk" start="0" end="jumlahJenisProduk - 1" direction="inc" step="1">
+                <output expression="&quot;Masukkan waktu kerja untuk Produk %c (jam): &quot;, kodeProduk" newline="True"/>
+                <input variable="kebutuhanProduk[indeksProduk][0]"/>
+                <if expression="kebutuhanProduk[indeksProduk][0] &lt; 0">
+                    <then>
+                        <output expression="&quot;Input tidak bisa negatif!&quot;" newline="True"/>
+                        <comment text="return"/>
+                    </then>
+                    <else/>
+                </if>
+                <output expression="&quot;Masukkan bahan baku untuk Produk %c: &quot;, kodeProduk" newline="True"/>
+                <input variable="kebutuhanProduk[indeksProduk][1]"/>
+                <if expression="kebutuhanProduk[indeksProduk][1] &lt; 0">
+                    <then>
+                        <output expression="&quot;Input tidak bisa negatif!&quot;" newline="True"/>
+                        <comment text="return"/>
+                    </then>
+                    <else/>
+                </if>
+                <output expression="&quot;Masukkan keuntungan per unit Produk %c (jam): &quot;, kodeProduk" newline="True"/>
+                <input variable="kebutuhanProduk[indeksProduk][2]"/>
+                <if expression="kebutuhanProduk[indeksProduk][2] &lt; 0">
+                    <then>
+                        <output expression="&quot;Input tidak bisa negatif!&quot;" newline="True"/>
+                        <comment text="return"/>
+                    </then>
+                    <else/>
+                </if>
+                <assign variable="kodeProduk" expression="kodeProduk + 1"/>
+            </for>
+            <declare name="daftarKombinasi [1000000]" type="Integer" array="True" size="jumlahJenisProduk + 2"/>
+            <declare name="kombinasiSementara" type="Integer" array="True" size="jumlahJenisProduk + 2"/>
+            <call expression="cariKombinasiProduk(0)"/>
+            <call expression="cetakKombinasi()"/>
+        </body>
+    </function>
+    <function name="cariKombinasiProduk" type="None" variable="">
+        <parameters>
+            <parameter name="indeksProduk" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <if expression="indeksProduk == jumlahJenisProduk">
+                <then>
+                    <if expression="totalWaktuKerja &lt;= batasWaktuKerja &amp;&amp; totalBahanBaku &lt;= batasBahanBaku">
+                        <then>
+                            <for variable="indeksKolom" start="0" end="jumlahJenisProduk + 1" direction="inc" step="1">
+                                <assign variable="daftarKombinasi[jumlahKombinasi][indeksKolom]" expression="kombinasiSementara[indeksKolom]"/>
+                            </for>
+                            <assign variable="daftarKeuntungan[jumlahKombinasi]" expression="totalKeuntungan"/>
+                            <if expression="jumlahKombinasi != 0">
+                                <then>
+                                    <if expression="daftarKeuntungan[indeksKombinasiOptimal] &lt; daftarKeuntungan[jumlahKombinasi]">
+                                        <then>
+                                            <assign variable="indeksKombinasiOptimal" expression="jumlahKombinasi"/>
+                                        </then>
+                                        <else/>
+                                    </if>
+                                </then>
+                                <else/>
+                            </if>
+                            <assign variable="jumlahKombinasi" expression="jumlahKombinasi + 1"/>
+                        </then>
+                        <else/>
+                    </if>
+                    <comment text="return"/>
+                </then>
+                <else/>
+            </if>
+            <for variable="jumlahProduk" start="0" end="batasWaktuKerja / kebutuhanProduk[indeksProduk][0]" direction="inc" step="1">
+                <assign variable="tambahanWaktuKerja" expression="kebutuhanProduk[indeksProduk][0] * jumlahProduk"/>
+                <assign variable="tambahanBahanBaku" expression="kebutuhanProduk[indeksProduk][1] * jumlahProduk;"/>
+                <assign variable="tambahanKeuntungan" expression="kebutuhanProduk[indeksProduk][2] * jumlahProduk;"/>
+                <if expression="totalWaktuKerja + tambahanWaktuKerja &lt;= batasWaktuKerja &amp;&amp; totalBahanBaku + tambahanBahanBaku &lt;= batasBahanBaku">
+                    <then>
+                        <assign variable="totalWaktuKerja" expression="totalWaktuKerja + tambahanWaktuKerja"/>
+                        <assign variable="totalBahanBaku" expression="totalBahanBaku + tambahanBahanBaku"/>
+                        <assign variable="totalKeuntungan" expression="totalKeuntungan + tambahanKeuntungan"/>
+                        <assign variable="kombinasiSementara[indeksProduk]" expression="jumlahProduk"/>
+                        <assign variable="kombinasiSementara[jumlahJenisProduk]" expression="totalWaktuKerja"/>
+                        <assign variable="kombinasiSementara[jumlahJenisProduk + 1]" expression="totalBahanBaku"/>
+                        <call expression="cariKombinasiProduk(indeksProduk + 1)"/>
+                        <assign variable="totalWaktuKerja" expression="totalWaktuKerja - tambahanWaktuKerja"/>
+                        <assign variable="totalBahanBaku" expression="totalBahanBaku - tambahanBahanBaku"/>
+                        <assign variable="totalKeuntungan" expression="totalKeuntungan - tambahanKeuntungan"/>
+                        <assign variable="kombinasiSementara[indeksProduk]" expression="0"/>
+                        <assign variable="kombinasiSementara[jumlahJenisProduk]" expression="0"/>
+                        <assign variable="kombinasiSementara[jumlahJenisProduk + 1]" expression="0"/>
+                    </then>
+                    <else>
+                        <comment text="return"/>
+                    </else>
+                </if>
+            </for>
+        </body>
+    </function>
+    <function name="cetakKombinasi" type="None" variable="">
+        <parameters/>
+        <body>
+            <assign variable="garis" expression="&quot;&quot;"/>
+            <for variable="kolom" start="0" end="jumlahJenisProduk + 2" direction="inc" step="1">
+                <assign variable="garis" expression="garis + &quot;-&quot;"/>
+                <assign variable="garis" expression="garis + &quot;-------------&quot;"/>
+            </for>
+            <assign variable="garis" expression="garis + &quot;-&quot;"/>
+            <assign variable="headerTabel" expression="&quot;&quot;"/>
+            <assign variable="kodeProduk" expression="65"/>
+            <for variable="indeksProduk" start="0" end="jumlahJenisProduk - 1" direction="inc" step="1">
+                <assign variable="headerTabel" expression="headerTabel + &quot;|&quot;"/>
+                <assign variable="headerTabel" expression="headerTabel + formatTengah(String.format(&quot;Produk %c&quot;, kodeProduk))"/>
+                <assign variable="kodeProduk" expression="kodeProduk + 1"/>
+            </for>
+            <assign variable="headerTabel" expression="headerTabel + &quot;| Waktu Mesin |  Bahan Baku |  Keuntungan |&quot;"/>
+            <output expression="garis" newline="True"/>
+            <output expression="headerTabel" newline="True"/>
+            <output expression="garis" newline="True"/>
+            <for variable="indeksKombinasi" start="0" end="jumlahKombinasi - 1" direction="inc" step="1">
+                <assign variable="nilai" expression="&quot;&quot; + daftarKombinasi[indeksKombinasi][kolom]"/>
+                <assign variable="isiTabel" expression="isiTabel + c"/>
+            </for>
+            <assign variable="isiTabel" expression="isiTabel + &quot;|&quot; + formatTengah(String.format(&quot;Rp%d&quot;, daftarKeuntungan[indeksKombinasi])) + &quot;|&quot;"/>
+            <if expression="indeksKombinasi == indeksKombinasiOptimal">
+                <then>
+                    <assign variable="isiTabel" expression="isiTabel + &quot;**(Optimal)**&quot;"/>
+                </then>
+                <else/>
+            </if>
+            <output expression="isiTabel" newline="True"/>
+            <output expression="garis" newline="True"/>
+            <output expression="&quot;\n=== Hasil Optimasi ===&quot;" newline="True"/>
+            <output expression="&quot;Produk Optimal:&quot;" newline="True"/>
+            <assign variable="charProduct" expression="65"/>
+            <for variable="indeksProduk" start="0" end="jumlahJenisProduk - 1" direction="inc" step="1">
+                <output expression="&quot;Produk %c: %d\n&quot;, charProduct + indeksProduk, daftarKombinasi[indeksKombinasiOptimal][indeksProduk]" newline="True"/>
+                <assign variable="charProduct" expression="charProduct + 1"/>
+            </for>
+            <output expression="&quot;Keuntungan Maksimal: Rp%d\n&quot;, daftarKeuntungan[indeksKombinasiOptimal]" newline="True"/>
+        </body>
+    </function>
+    <function name="formatTengah" type="String" variable="hasilFormat">
+        <parameters>
+            <parameter name="teks" type="String" array="False"/>
+        </parameters>
+        <body>
+            <assign variable="hasilFormat" expression="&quot;&quot;"/>
+            <assign variable="padding" expression="13 - teks.length()"/>
+            <assign variable="paddingKanan" expression="(padding % 2 != 0) ? padding / 2 + 1 : padding / 2"/>
+            <assign variable="paddingKiri" expression="padding - paddingKanan"/>
+            <for variable="i" start="0" end="paddingKanan - 1" direction="inc" step="1">
+                <assign variable="hasilFormat" expression="hasilFormat + &quot; &quot;"/>
+            </for>
+        </body>
+    </function>
+</flowgorithm>
